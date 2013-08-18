@@ -12,15 +12,6 @@ files = [
 exclude = [
 ];
 
-// use dots reporter, as travis terminal does not support escaping sequences
-// possible values: 'dots', 'progress', 'junit'
-// CLI --reporters progress
-reporters = ['progress', 'junit'];
-
-junitReporter = {
-  // will be resolved to basePath (in the same way as files/exclude patterns)
-  outputFile: 'test-results.xml'
-};
 
 // web server port
 // CLI --port 9876
@@ -65,8 +56,3 @@ singleRun = false;
 // report which specs are slower than 500ms
 // CLI --report-slower-than 500
 reportSlowerThan = 500;
-
-// compile coffee scripts
-preprocessors = {
-  '**/*.coffee': 'coffee'
-};
