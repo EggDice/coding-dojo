@@ -27,5 +27,17 @@ describe('price calculator', function() {
     it('should give 5% discoutn for 2 different books', function() {
       expect(price([1, 2])).toBe(2 * 8 * 0.95);
     });
+
+    it('should give 10% discoutn for 3 different books', function() {
+      expect(price([1, 2, 3])).toBe(3 * 8 * 0.90);
+    });
+
+    it('should give 20% discoutn for 4 different books', function() {
+      expect(price([1, 2, 3, 4])).toBe(4 * 8 * 0.80);
+    });
+
+    it('should give 20% discoutn for 4 different books', function() {
+      expect(price([1, 2, 3, 4, 5])).toBe(5 * 8 * 0.75);
+    });
   });
 });
