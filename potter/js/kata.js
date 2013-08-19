@@ -1,19 +1,9 @@
 function price(books) {
-  if (!books.length) {
-    return 0;
-  } else {
-    var discount = 1;
-    if (books.length > 4 && isEveryUniq(books)) {
-      discount = 0.75;
-    } else if (books.length > 3 && isEveryUniq(books)) {
-      discount = 0.80;
-    } else if (books.length > 2 && isEveryUniq(books)) {
-      discount = 0.90;
-    } else if (books.length > 1 && isEveryUniq(books)) {
-      discount = 0.95;
-    }
-    return books.length * 8 * discount;
-  }
+  var combos = getCombos(books);
+  var output = 0;
+  return combos.reduce(function(price, combo) {
+    return price + comboPrice(combo);
+  }, 0);
 }
 
 function isEveryUniq(array) {
@@ -25,4 +15,31 @@ function isEveryUniq(array) {
     }
   }
   return true;
+}
+
+function getCombos(books) {
+  var combo = [];
+  var left = [];
+  books.forEach(function(book) {
+    if (combo.indexOf(book) !== -1) {
+      left.push(book);
+    } else {
+      combo.push(book);
+    }
+  });
+  return [combo, left];
+}
+
+function comboPrice(combo) {
+  var discount = 1;
+  if (combo.length > 4 && isEveryUniq(combo)) {
+    discount = 0.75;
+  } else if (combo.length > 3 && isEveryUniq(combo)) {
+    discount = 0.80;
+  } else if (combo.length > 2 && isEveryUniq(combo)) {
+    discount = 0.90;
+  } else if (combo.length > 1 && isEveryUniq(combo)) {
+    discount = 0.95;
+  }
+  return combo.length * 8 * discount;
 }

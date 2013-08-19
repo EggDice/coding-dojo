@@ -23,21 +23,31 @@ describe('price calculator', function() {
     expect(price([1, 1])).toBe(2 * 8);
   });
 
-  describe('discounts', function() {
-    it('should give 5% discoutn for 2 different books', function() {
+  describe('simple discounts', function() {
+    it('should give 5% discount for 2 different books', function() {
       expect(price([1, 2])).toBe(2 * 8 * 0.95);
     });
 
-    it('should give 10% discoutn for 3 different books', function() {
+    it('should give 10% discount for 3 different books', function() {
       expect(price([1, 2, 3])).toBe(3 * 8 * 0.90);
     });
 
-    it('should give 20% discoutn for 4 different books', function() {
+    it('should give 20% discount for 4 different books', function() {
       expect(price([1, 2, 3, 4])).toBe(4 * 8 * 0.80);
     });
 
-    it('should give 20% discoutn for 4 different books', function() {
+    it('should give 20% discount for 4 different books', function() {
       expect(price([1, 2, 3, 4, 5])).toBe(5 * 8 * 0.75);
+    });
+  });
+
+  describe('double discounts', function() {
+    it('should give 5% discount for 2 different books and puls one', function() {
+      expect(price([1, 1, 2])).toBe(2 * 8 * 0.95 + 8);
+    });
+
+    it('should give 5% discount for 2 different books 2 times', function() {
+      expect(price([1, 1, 2, 2])).toBe(4 * 8 * 0.95);
     });
   });
 });
