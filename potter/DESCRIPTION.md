@@ -1,4 +1,5 @@
-http://codingdojo.org/cgi-bin/wiki.pl?KataPotter
+Description
+-----------
 
 If you want to try this Kata for yourself or at your dojo meeting, read the problem description and see if the Kata appeals to you. The rest is commentary and helpful clues for if you get stuck solving it. I would recommend trying the Kata for yourself before reading too much of it.
 Problem Description
@@ -13,14 +14,16 @@ Potter mania is sweeping the country and parents of teenagers everywhere are que
 
 For example, how much does this basket of books cost?
 
-  2 copies of the first book
-  2 copies of the second book
-  2 copies of the third book
-  1 copy of the fourth book
-  1 copy of the fifth book
+*  2 copies of the first book
+*  2 copies of the second book
+*  2 copies of the third book
+*  1 copy of the fourth book
+*  1 copy of the fifth book
+
 (answer: 51.20 EUR)
 
 Clues
+-----
 
 You’ll find that this Kata is easy at the start. You can get going with tests for baskets of 0 books, 1 book, 2 identical books, 2 different books… and it is not too difficult to work in small steps and gradually introduce complexity.
 
@@ -28,42 +31,44 @@ However, the twist becomes apparent when you sit down and work out how much you 
 
 You will have to introduce a certain amount of clever optimization algorithm. But not too much! This problem does not require a fully fledged general purpose optimizer. Try to solve just this problem well in order to share it for everyone or even in the ??? . Trust that you can generalize and improve your solution if and when new requirements come along.
 
-This application has nice application for
+* This application has nice application for
+
 Suggested Test Cases
+--------------------
 
-(Originally posted at xp-france.net/cgi-bin/wiki.pl?KataPotter)
+    def testBasics
+      assert_equal(0, price([]))
+      assert_equal(8, price([0]))
+      assert_equal(8, price([1]))
+      assert_equal(8, price([2]))
+      assert_equal(8, price([3]))
+      assert_equal(8, price([4]))
+      assert_equal(8 * 2, price([0, 0]))
+      assert_equal(8 * 3, price([1, 1, 1]))
+    end
 
-def testBasics
-  assert_equal(0, price([]))
-  assert_equal(8, price([0]))
-  assert_equal(8, price([1]))
-  assert_equal(8, price([2]))
-  assert_equal(8, price([3]))
-  assert_equal(8, price([4]))
-  assert_equal(8 * 2, price([0, 0]))
-  assert_equal(8 * 3, price([1, 1, 1]))
-end
+    def testSimpleDiscounts
+      assert_equal(8 * 2 * 0.95, price([0, 1]))
+      assert_equal(8 * 3 * 0.9, price([0, 2, 4]))
+      assert_equal(8 * 4 * 0.8, price([0, 1, 2, 4]))
+      assert_equal(8 * 5 * 0.75, price([0, 1, 2, 3, 4]))
+    end
 
-def testSimpleDiscounts
-  assert_equal(8 * 2 * 0.95, price([0, 1]))
-  assert_equal(8 * 3 * 0.9, price([0, 2, 4]))
-  assert_equal(8 * 4 * 0.8, price([0, 1, 2, 4]))
-  assert_equal(8 * 5 * 0.75, price([0, 1, 2, 3, 4]))
-end
+    def testSeveralDiscounts
+      assert_equal(8 + (8 * 2 * 0.95), price([0, 0, 1]))
+      assert_equal(2 * (8 * 2 * 0.95), price([0, 0, 1, 1]))
+      assert_equal((8 * 4 * 0.8) + (8 * 2 * 0.95), price([0, 0, 1, 2, 2, 3]))
+      assert_equal(8 + (8 * 5 * 0.75), price([0, 1, 1, 2, 3, 4]))
+    end
 
-def testSeveralDiscounts
-  assert_equal(8 + (8 * 2 * 0.95), price([0, 0, 1]))
-  assert_equal(2 * (8 * 2 * 0.95), price([0, 0, 1, 1]))
-  assert_equal((8 * 4 * 0.8) + (8 * 2 * 0.95), price([0, 0, 1, 2, 2, 3]))
-  assert_equal(8 + (8 * 5 * 0.75), price([0, 1, 1, 2, 3, 4]))
-end
+    def testEdgeCases
+      assert_equal(2 * (8 * 4 * 0.8), price([0, 0, 1, 1, 2, 2, 3, 4]))
+      assert_equal(3 * (8 * 5 * 0.75) + 2 * (8 * 4 * 0.8), 
+        price([0, 0, 0, 0, 0, 
+               1, 1, 1, 1, 1, 
+               2, 2, 2, 2, 
+               3, 3, 3, 3, 3, 
+               4, 4, 4, 4]))
+    end
 
-def testEdgeCases
-  assert_equal(2 * (8 * 4 * 0.8), price([0, 0, 1, 1, 2, 2, 3, 4]))
-  assert_equal(3 * (8 * 5 * 0.75) + 2 * (8 * 4 * 0.8), 
-    price([0, 0, 0, 0, 0, 
-           1, 1, 1, 1, 1, 
-           2, 2, 2, 2, 
-           3, 3, 3, 3, 3, 
-           4, 4, 4, 4]))
-end
+http://codingdojo.org/cgi-bin/wiki.pl?KataPotter
