@@ -50,4 +50,10 @@ describe('price calculator', function() {
       expect(price([1, 1, 2, 2])).toBe(4 * 8 * 0.95);
     });
   });
+
+  describe('multiple (more than 2) discounts', function() {
+    it('should give 5% discount for 2 different books 3 times', function() {
+      expect(price([1, 1, 1, 2, 2, 2])).toBe(6 * 8 * 0.95);
+    });
+  });
 });

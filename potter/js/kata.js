@@ -1,45 +1,45 @@
+var DISCOUNTS = {
+  '1': 1,
+  '2': 0.95,
+  '3': 0.90,
+  '4': 0.80,
+  '5': 0.75
+};
+
+var BASE_PRICE = 8;
+
 function price(books) {
   var combos = getCombos(books);
   var output = 0;
   return combos.reduce(function(price, combo) {
-    return price + comboPrice(combo);
+    return price + getComboPrice(combo);
   }, 0);
 }
 
-function isEveryUniq(array) {
-  var copy = array.slice(0);
-  while (copy.length !== 1) {
-    var elem = copy.pop();
-    if (copy.indexOf(elem) !== -1) {
-      return false;
-    }
-  }
-  return true;
-}
-
 function getCombos(books) {
-  var combo = [];
-  var left = [];
+  var combos = [];
   books.forEach(function(book) {
-    if (combo.indexOf(book) !== -1) {
-      left.push(book);
+    var index = getComboIndexWhereBookCanAppend(book, combos);
+    if (index === -1) {
+      combos.push([book]);
     } else {
-      combo.push(book);
+      combos[index].push(book);
     }
   });
-  return [combo, left];
+  return combos;
 }
 
-function comboPrice(combo) {
-  var discount = 1;
-  if (combo.length > 4 && isEveryUniq(combo)) {
-    discount = 0.75;
-  } else if (combo.length > 3 && isEveryUniq(combo)) {
-    discount = 0.80;
-  } else if (combo.length > 2 && isEveryUniq(combo)) {
-    discount = 0.90;
-  } else if (combo.length > 1 && isEveryUniq(combo)) {
-    discount = 0.95;
-  }
-  return combo.length * 8 * discount;
+function getComboIndexWhereBookCanAppend(book, combos) {
+  var index = -1;
+  combos.forEach(function(combo, i) {
+    if (combo.indexOf(book) === -1) {
+      index = i;
+    }
+  });
+  return index;
+}
+
+function getComboPrice(combo) {
+  var discount = DISCOUNTS[combo.length];
+  return combo.length * BASE_PRICE * discount;
 }
