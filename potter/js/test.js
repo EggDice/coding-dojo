@@ -42,12 +42,19 @@ describe('price calculator', function() {
   });
 
   describe('double discounts', function() {
-    it('should give 5% discount for 2 different books and puls one', function() {
+    it('should give 5% discount for 2 different books and puls one',
+       function() {
       expect(price([1, 1, 2])).toBe(2 * 8 * 0.95 + 8);
     });
 
     it('should give 5% discount for 2 different books 2 times', function() {
       expect(price([1, 1, 2, 2])).toBe(4 * 8 * 0.95);
+    });
+
+
+    iit('should give 25% discount for 5 different books and plus one',
+        function() {
+      expect(price([1, 2, 2, 3, 4, 5])).toBe(5 * 8 * 0.75 + 8);
     });
   });
 

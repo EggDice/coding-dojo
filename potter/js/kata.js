@@ -10,7 +10,6 @@ var BASE_PRICE = 8;
 
 function price(books) {
   var combos = getCombos(books);
-  var output = 0;
   return combos.reduce(function(price, combo) {
     return price + getComboPrice(combo);
   }, 0);
@@ -19,7 +18,7 @@ function price(books) {
 function getCombos(books) {
   var combos = [];
   books.forEach(function(book) {
-    var index = getComboIndexWhereBookCanAppend(book, combos);
+    var index = getLongestComboIndexWhereBookCanAppend(book, combos);
     if (index === -1) {
       combos.push([book]);
     } else {
@@ -29,14 +28,22 @@ function getCombos(books) {
   return combos;
 }
 
-function getComboIndexWhereBookCanAppend(book, combos) {
-  var index = -1;
+function getLongestComboIndexWhereBookCanAppend(book, combos) {
+  var indexes = getComboIndexesWhereBookCanAppend(book, combos);
+  return indexes.reduce(function(bestIndex, currentIndex) {
+    return currentIndex.size > bestIndex.size ? currentIndex : bestIndex;
+  }, {index: -1, size: 0}).index;
+}
+
+function getComboIndexesWhereBookCanAppend(book, combos) {
+  var indexes = [];
   combos.forEach(function(combo, i) {
     if (combo.indexOf(book) === -1) {
       index = i;
+      indexes.push({index: index, size: combo.length});
     }
   });
-  return index;
+  return indexes;
 }
 
 function getComboPrice(combo) {
