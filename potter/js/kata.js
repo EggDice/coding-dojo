@@ -13,49 +13,43 @@ var BASE_PRICE = 8;
 function price(books) {
   var combos = getCombos(books);
   return combos.reduce(function(price, combo) {
-    return price + getComboPrice(combo);
+    return price + getComboPriceByLength(combo.length);
   }, 0);
 }
 
 function getCombos(books) {
   var combos = [];
   books.forEach(function(book) {
-    var index = getLongestComboIndexWhereBookCanAppend(book, combos);
-    if (index === -1) {
-      combos.push([book]);
-    } else {
-      combos[index].push(book);
+    var combo = getBestAppendPriceCombo(book, combos);
+    if (!combo.length) {
+      combos.push(combo);
     }
+    combo.push(book);
   });
   return combos;
 }
 
-function getLongestComboIndexWhereBookCanAppend(book, combos) {
-  var indexes = getComboIndexesWhereBookCanAppend(book, combos);
-  return indexes.reduce(function(bestIndex, currentIndex) {
-    return currentIndex.prizeDifference < bestIndex.prizeDifference ?
-      currentIndex : bestIndex;
-  }, {index: -1, prizeDifference: Infinity}).index;
+function getBestAppendPriceCombo(book, combos) {
+  return combos.filter(function(combo) {
+    return isBookInCombo(book, combo);
+  }).reduce(function(bestCombo, currentCombo) {
+    return getBetterAppendPriceCombo(bestCombo, currentCombo);
+  }, []);
 }
 
-function getComboIndexesWhereBookCanAppend(book, combos) {
-  var indexes = [];
-  combos.forEach(function(combo, i) {
-    if (combo.indexOf(book) === -1) {
-      indexes.push({
-        index: i,
-        prizeDifference: getPriceDifference(book, combo)
-      });
-    }
-  });
-  return indexes;
+function getComboPriceByLength(length) {
+  return length * BASE_PRICE * DISCOUNTS[length];
 }
 
-function getComboPrice(combo) {
-  var discount = DISCOUNTS[combo.length];
-  return combo.length * BASE_PRICE * discount;
+function isBookInCombo(book, combo) {
+  return combo.indexOf(book) === -1;
 }
 
-function getPriceDifference(book, combo) {
-  return getComboPrice(combo.concat([book])) - getComboPrice(combo);
+function getBetterAppendPriceCombo(combo1, combo2) {
+  return getAppendPrice(combo1) > getAppendPrice(combo2) ? combo1 : combo2;
+}
+
+function getAppendPrice(combo) {
+  var l = combo.length;
+  return getComboPriceByLength(l) - getComboPriceByLength(l + 1);
 }
