@@ -52,7 +52,7 @@ describe('price calculator', function() {
     });
 
 
-    iit('should give 25% discount for 5 different books and plus one',
+    it('should give 25% discount for 5 different books and plus one',
         function() {
       expect(price([1, 2, 2, 3, 4, 5])).toBe(5 * 8 * 0.75 + 8);
     });
@@ -61,6 +61,12 @@ describe('price calculator', function() {
   describe('multiple (more than 2) discounts', function() {
     it('should give 5% discount for 2 different books 3 times', function() {
       expect(price([1, 1, 1, 2, 2, 2])).toBe(6 * 8 * 0.95);
+    });
+  });
+
+  describe('edge cases', function() {
+    it('should make two 4 combos instead of 5 + 3', function() {
+      expect(price([1, 1, 2, 2, 3, 3, 4, 5])).toBe(2 * 4 * 8 * 0.80);
     });
   });
 });

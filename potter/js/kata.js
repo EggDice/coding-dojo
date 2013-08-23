@@ -1,3 +1,5 @@
+'use strict';
+
 var DISCOUNTS = {
   '1': 1,
   '2': 0.95,
@@ -31,16 +33,19 @@ function getCombos(books) {
 function getLongestComboIndexWhereBookCanAppend(book, combos) {
   var indexes = getComboIndexesWhereBookCanAppend(book, combos);
   return indexes.reduce(function(bestIndex, currentIndex) {
-    return currentIndex.size > bestIndex.size ? currentIndex : bestIndex;
-  }, {index: -1, size: 0}).index;
+    return currentIndex.prizeDifference < bestIndex.prizeDifference ?
+      currentIndex : bestIndex;
+  }, {index: -1, prizeDifference: Infinity}).index;
 }
 
 function getComboIndexesWhereBookCanAppend(book, combos) {
   var indexes = [];
   combos.forEach(function(combo, i) {
     if (combo.indexOf(book) === -1) {
-      index = i;
-      indexes.push({index: index, size: combo.length});
+      indexes.push({
+        index: i,
+        prizeDifference: getPriceDifference(book, combo)
+      });
     }
   });
   return indexes;
@@ -49,4 +54,8 @@ function getComboIndexesWhereBookCanAppend(book, combos) {
 function getComboPrice(combo) {
   var discount = DISCOUNTS[combo.length];
   return combo.length * BASE_PRICE * discount;
+}
+
+function getPriceDifference(book, combo) {
+  return getComboPrice(combo.concat([book])) - getComboPrice(combo);
 }
