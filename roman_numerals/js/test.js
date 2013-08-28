@@ -25,6 +25,10 @@ describe('normal2roman converter', function() {
     it('should return X', function() {
       expect(normal2roman(10)).toBe('X');
     });
+
+    it('should return L', function() {
+      expect(normal2roman(50)).toBe('L');
+    });
   });
 
   it('should return III', function() {
@@ -49,5 +53,9 @@ describe('normal2roman converter', function() {
 
   it('should return XX', function() {
     expect(normal2roman(20)).toBe('XX');
+  });
+
+  it('should return XL', function() {
+    expect(normal2roman(40)).toBe('XL');
   });
 });
