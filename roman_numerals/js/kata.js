@@ -6,9 +6,7 @@ var BASE_RULES = {
 };
 
 function normal2roman(normal) {
-  if (!normal) {
-    return '';
-  }
+  if (!normal) { return ''; }
   var output = '';
   createRules(BASE_RULES).forEach(function(rule) {
     while (normal >= rule.value) {
@@ -19,40 +17,51 @@ function normal2roman(normal) {
   return output;
 }
 
-/*function log10(val) {
-  return Math.log(val) / Math.LN10;
-}
-
-function is10exponent(number) {
-  number
-}*/
-
 function createRules(baseRules) {
-  var base_values = Object.keys(BASE_RULES).map(function(string) {
-    return parseInt(string, 10);
-  });
+  var base_values = Object.keys(BASE_RULES).map(toInt);
   var rules = [];
   for (var i = 0, l = base_values.length; i < l; ++i) {
     var value = base_values[i];
     var nextValue = base_values[i + 1];
     var prevValue = base_values[i - 1];
-    rules.push({value: value, symbol: BASE_RULES[value]});
-    if (i < l - 1) {
-      if (base_values[i] == 10 || base_values[i] == 1) {
-        rules.push({
-          value: nextValue - value,
-          symbol: BASE_RULES[value] + BASE_RULES[nextValue]
-        });
-      } else {
-        rules.push({
-          value: nextValue - prevValue,
-          symbol: BASE_RULES[prevValue] + BASE_RULES[nextValue]
-        });
-      }
+    rules.push(createSimpleRule(value));
+    if (i == l) { break; }
+    if (is10exponent(value)) {
+      rules.push(createComplexRule(nextValue, value));
+    } else {
+      rules.push(createComplexRule(nextValue, prevValue));
     }
   }
-  return rules.sort(function(a, b) {
-    return b.value - a.value;
-  });
+  return rules.sort(sortByValue);
 }
 
+function createComplexRule(biggerNumber, substractedNumber) {
+  return {
+    'value': biggerNumber - substractedNumber,
+    'symbol': BASE_RULES[substractedNumber] + BASE_RULES[biggerNumber]
+  };
+}
+
+function createSimpleRule(number) {
+  return {
+    'value': number,
+    'symbol': BASE_RULES[number]
+  };
+}
+
+function is10exponent(number) {
+  var log = log10(number);
+  return Math.floor(log) === log;
+}
+
+function log10(val) {
+  return Math.log(val) / Math.LN10;
+}
+
+function sortByValue(a, b) {
+  return b.value - a.value;
+}
+
+function toInt(string) {
+  return parseInt(string, 10);
+}
