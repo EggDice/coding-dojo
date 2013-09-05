@@ -98,3 +98,19 @@ describe('normal2roman converter', function() {
     expect(normal2roman(1)).toBe('I');
   });
 });
+
+describe('roman2normal converter', function() {
+  it('should exists', function() {
+    expect(roman2normal).toEqual(jasmine.any(Function));
+  });
+
+  describe('one letters', function() {
+    it('should return I', function() {
+      expect(roman2normal('I')).toBe(1);
+    });
+
+    it('should return I', function() {
+      expect(roman2normal('V')).toBe(5);
+    });
+  });
+});
