@@ -105,12 +105,70 @@ describe('roman2normal converter', function() {
   });
 
   describe('one letters', function() {
-    it('should return I', function() {
+    it('should return 1', function() {
       expect(roman2normal('I')).toBe(1);
     });
 
-    it('should return I', function() {
+    it('should return 5', function() {
       expect(roman2normal('V')).toBe(5);
+    });
+
+    it('should return 10', function() {
+      expect(roman2normal('X')).toBe(10);
+    });
+
+    it('should return 50', function() {
+      expect(roman2normal('L')).toBe(50);
+    });
+
+    it('should return 100', function() {
+      expect(roman2normal('C')).toBe(100);
+    });
+
+    it('should return 500', function() {
+      expect(roman2normal('D')).toBe(500);
+    });
+
+    it('should return 1000', function() {
+      expect(roman2normal('M')).toBe(1000);
+    });
+  });
+
+   describe('combinations', function() {
+    it('should return 3', function() {
+      expect(roman2normal('III')).toBe(3);
+    });
+
+    it('should return 4', function() {
+      expect(roman2normal('IV')).toBe(4);
+    });
+
+    it('should return 7', function() {
+      expect(roman2normal('VII')).toBe(7);
+    });
+
+    it('should return 9', function() {
+      expect(roman2normal('IX')).toBe(9);
+    });
+
+    it('should return 16', function() {
+      expect(roman2normal('XVI')).toBe(16);
+    });
+
+    it('should return 20', function() {
+      expect(roman2normal('XX')).toBe(20);
+    });
+
+    it('should return 40', function() {
+      expect(roman2normal('XL')).toBe(40);
+    });
+
+    it('should return 473', function() {
+      expect(roman2normal('CDLXXIII')).toBe(473);
+    });
+
+    it('should return 1999', function() {
+      expect(roman2normal('MCMXCIX')).toBe(1999);
     });
   });
 });

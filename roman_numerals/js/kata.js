@@ -40,15 +40,22 @@ function roman2normal(roman) {
   return convert();
 
   function convert() {
-    var normal = 0;
     var rules = generateRules();
-    console.log(rules);
-    rules.forEach(function(rule) {
-      if (rule.symbol === roman) {
-        normal = rule.value;
+    return rules.sort(function(a, b) {
+      return a.value - b.value;
+    }).map(function(rule) {
+      return {
+        'value': rule.value,
+        'regexp': new RegExp(rule.symbol + '$')
+      };
+    }).reduce(function(normal, rule) {
+      var match;
+      while (match = roman.match(rule.regexp)) {
+        roman = roman.substr(0, match.index);
+        normal += rule.value;
       }
-    });
-    return normal;
+      return normal;
+    }, 0);
   }
 }
 
