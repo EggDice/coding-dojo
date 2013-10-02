@@ -1,124 +1,142 @@
-var BASE_RULES = {
-  '1': 'I',
-  '5': 'V',
-  '10': 'X',
-  '50': 'L',
-  '100': 'C',
-  '500': 'D',
-  '1000': 'M'
-};
+(function(window) {
+  'use strict';
 
-var allRules = [];
+  var BASE_RULES = {
+    '1': 'I',
+    '5': 'V',
+    '10': 'X',
+    '50': 'L',
+    '100': 'C',
+    '500': 'D',
+    '1000': 'M'
+  };
 
-function normal2roman(normal) {
-  return convert();
+  var allRules = [];
 
-  function convert() {
-    checkArgument();
-    return generateRules().reduce(reduceRule, '');
-  }
+  window.normal2roman = function(normal) {
+    return convert();
 
-  function checkArgument() {
-    if (normal > 3000) {
-      throw new Error('Argument bigger than 3000');
+    function convert() {
+      checkArgument();
+      return generateAscendingRules().reduce(reduceRule, '');
     }
-    if (normal < 1) {
-      throw new Error('Argument smaller than 1');
+
+    function checkArgument() {
+      if (normal > 3000) {
+        throw new Error('Argument bigger than 3000');
+      }
+      if (normal < 1) {
+        throw new Error('Argument smaller than 1');
+      }
     }
-  }
 
-  function reduceRule(roman, rule) {
-    while (normal >= rule.value) {
-      roman += rule.symbol;
-      normal -= rule.value;
+    function reduceRule(roman, rule) {
+      while (normal >= rule.value) {
+        roman += rule.symbol;
+        normal -= rule.value;
+      }
+      return roman;
     }
-    return roman;
-  }
-}
+  };
 
-function roman2normal(roman) {
-  return convert();
+  window.roman2normal = function(roman) {
+    return convert();
 
-  function convert() {
-    var rules = generateRules();
-    return rules.sort(function(a, b) {
-      return a.value - b.value;
-    }).map(function(rule) {
-      return {
-        'value': rule.value,
-        'regexp': new RegExp(rule.symbol + '$')
-      };
-    }).reduce(function(normal, rule) {
+    function convert() {
+      return generateRegExpRules().reduce(reduceRule, 0);
+    }
+
+    function reduceRule(normal, rule) {
       var match;
       while (match = roman.match(rule.regexp)) {
         roman = roman.substr(0, match.index);
         normal += rule.value;
       }
       return normal;
-    }, 0);
+    }
+  };
+
+  function generateRules() {
+    if (!allRules.length) {
+      var baseValues = Object.keys(BASE_RULES).map(toInt);
+      createRulesByBaseValues(baseValues);
+    }
+    return allRules;
   }
-}
 
-function generateRules() {
-  if (!allRules.length) {
-    var baseValues = Object.keys(BASE_RULES).map(toInt);
-    createRulesByBaseValues(baseValues);
-    allRules.sort(sortByValue);
+  function generateAscendingRules() {
+    return generateRules().sort(sortByValueAscending);
   }
-  return allRules;
-}
 
-function toInt(string) {
-  return parseInt(string, 10);
-}
+  function generateDescendingRules() {
+    return generateRules().sort(sortByValueDescending);
+  }
 
-function createRulesByBaseValues(baseValues) {
-  for (var i = 0, l = baseValues.length; i < l; ++i) {
-    var value = baseValues[i];
-    var nextValue = baseValues[i + 1];
-    var prevValue = baseValues[i - 1];
-    addSimpleRule(value);
-    if (i + 1 !== l) {
-      addComplexRule(value, nextValue, prevValue);
+  function generateRegExpRules() {
+    return generateDescendingRules().map(function(rule) {
+      return {
+        'value': rule.value,
+        'regexp': new RegExp(rule.symbol + '$')
+      };
+    });
+  }
+
+  function toInt(string) {
+    return parseInt(string, 10);
+  }
+
+  function createRulesByBaseValues(baseValues) {
+    for (var i = 0, l = baseValues.length; i < l; ++i) {
+      var value = baseValues[i];
+      var nextValue = baseValues[i + 1];
+      var prevValue = baseValues[i - 1];
+      addSimpleRule(value);
+      if (i + 1 !== l) {
+        addComplexRule(value, nextValue, prevValue);
+      }
     }
   }
-}
 
-function addSimpleRule(value) {
-  allRules.push(createSimpleRule(value));
-}
-
-function addComplexRule(value, nextValue, prevValue) {
-  if (is10exponent(value)) {
-    allRules.push(createComplexRule(nextValue, value));
-  } else {
-    allRules.push(createComplexRule(nextValue, prevValue));
+  function addSimpleRule(value) {
+    allRules.push(createSimpleRule(value));
   }
-}
 
-function createComplexRule(biggerNumber, substractedNumber) {
-  return {
-    'value': biggerNumber - substractedNumber,
-    'symbol': BASE_RULES[substractedNumber] + BASE_RULES[biggerNumber]
-  };
-}
+  function addComplexRule(value, nextValue, prevValue) {
+    if (is10exponent(value)) {
+      allRules.push(createComplexRule(nextValue, value));
+    } else {
+      allRules.push(createComplexRule(nextValue, prevValue));
+    }
+  }
 
-function createSimpleRule(number) {
-  return {
-    'value': number,
-    'symbol': BASE_RULES[number]
-  };
-}
+  function createComplexRule(biggerNumber, substractedNumber) {
+    return {
+      'value': biggerNumber - substractedNumber,
+      'symbol': BASE_RULES[substractedNumber] + BASE_RULES[biggerNumber]
+    };
+  }
 
-function is10exponent(number) {
-  var log = log10(number);
-  return Math.floor(log) === log;
-}
+  function createSimpleRule(number) {
+    return {
+      'value': number,
+      'symbol': BASE_RULES[number]
+    };
+  }
 
-function log10(val) {
-  return Math.log(val) / Math.LN10;
-}
+  function is10exponent(number) {
+    var log = log10(number);
+    return Math.floor(log) === log;
+  }
 
-function sortByValue(a, b) {
-  return b.value - a.value;
-}
+  function log10(val) {
+    return Math.log(val) / Math.LN10;
+  }
+
+  function sortByValueAscending(a, b) {
+    return b.value - a.value;
+  }
+
+  function sortByValueDescending(a, b) {
+    return a.value - b.value;
+  }
+})(this);
