@@ -12,92 +12,89 @@
   };
 
   var Rules = {
-    allRules: [],
+    simpleRules_: [],
+    ascendingSimpleRules: [],
+    descendingRegExpRules: [],
+
     generateRules: function() {
-      if (!allRules.length) {
+      if (!this.simpleRules_.length) {
         var baseValues = Object.keys(BASE_RULES).map(toInt);
-        createRulesByBaseValues(baseValues);
-        ascendingSimpleRules = generateAscendingSimpleRules();
-        descendingRegExpRules = generateDescendingRegExpRules();
+        this.createRulesByBaseValues_(baseValues);
+        this.generateAscendingSimpleRules_();
+        this.generateDescendingRegExpRules_();
       }
-      return allRules;
+    },
+
+    createRulesByBaseValues_: function(baseValues) {
+      for (var i = 0, l = baseValues.length; i < l; ++i) {
+        var value = baseValues[i];
+        var nextValue = baseValues[i + 1];
+        var prevValue = baseValues[i - 1];
+        this.addSimpleRule_(value);
+        if (i + 1 !== l) {
+          this.addComplexRule_(value, nextValue, prevValue);
+        }
+      }
+    },
+
+    addSimpleRule_: function(value) {
+      this.simpleRules_.push(this.createSimpleRule_(value));
+    },
+
+    createSimpleRule_: function(number) {
+      return {
+        'value': number,
+        'symbol': BASE_RULES[number]
+      };
+    },
+
+    addComplexRule_: function(value, nextValue, prevValue) {
+      if (is10exponent(value)) {
+        this.simpleRules_.push(this.createComplexRule_(nextValue, value));
+      } else {
+        this.simpleRules_.push(this.createComplexRule_(nextValue, prevValue));
+      }
+    },
+
+    createComplexRule_: function(biggerNumber, substractedNumber) {
+      return {
+        'value': biggerNumber - substractedNumber,
+        'symbol': BASE_RULES[substractedNumber] + BASE_RULES[biggerNumber]
+      };
+    },
+
+    generateAscendingSimpleRules_: function() {
+      this.ascendingSimpleRules = cloneArray(this.simpleRules_)
+          .sort(this.sortByValueAscending_);
+    },
+
+    generateDescendingRegExpRules_: function() {
+      this.descendingRegExpRules = cloneArray(this.simpleRules_)
+          .map(function(rule) {
+        return {
+          'value': rule.value,
+          'regexp': new RegExp(rule.symbol + '$')
+        };
+      }).sort(this.sortByValueDescending_);
+    },
+
+    sortByValueAscending_: function(a, b) {
+      return b.value - a.value;
+    },
+
+    sortByValueDescending_: function(a, b) {
+      return a.value - b.value;
     }
   };
 
-  var allRules = [];
-  var ascendingSimpleRules;
-  var descendingRegExpRules;
-
-  generateRules();
-
-
-  function generateRules() {
-    if (!allRules.length) {
-      var baseValues = Object.keys(BASE_RULES).map(toInt);
-      createRulesByBaseValues(baseValues);
-      ascendingSimpleRules = generateAscendingSimpleRules(allRules);
-      descendingRegExpRules = generateDescendingRegExpRules(allRules);
-    }
-    return allRules;
-  }
-
-  function generateAscendingSimpleRules(simpleRules) {
-    return cloneArray(simpleRules).sort(sortByValueAscending);
-  }
-
-  function generateDescendingRegExpRules(simpleRules) {
-    return cloneArray(simpleRules).map(function(rule) {
-      return {
-        'value': rule.value,
-        'regexp': new RegExp(rule.symbol + '$')
-      };
-    }).sort(sortByValueDescending);
-  }
-
-  function createRulesByBaseValues(baseValues) {
-    for (var i = 0, l = baseValues.length; i < l; ++i) {
-      var value = baseValues[i];
-      var nextValue = baseValues[i + 1];
-      var prevValue = baseValues[i - 1];
-      addSimpleRule(value);
-      if (i + 1 !== l) {
-        addComplexRule(value, nextValue, prevValue);
-      }
-    }
-  }
-
-  function addSimpleRule(value) {
-    allRules.push(createSimpleRule(value));
-  }
-
-  function addComplexRule(value, nextValue, prevValue) {
-    if (is10exponent(value)) {
-      allRules.push(createComplexRule(nextValue, value));
-    } else {
-      allRules.push(createComplexRule(nextValue, prevValue));
-    }
-  }
-
-  function createComplexRule(biggerNumber, substractedNumber) {
-    return {
-      'value': biggerNumber - substractedNumber,
-      'symbol': BASE_RULES[substractedNumber] + BASE_RULES[biggerNumber]
-    };
-  }
-
-  function createSimpleRule(number) {
-    return {
-      'value': number,
-      'symbol': BASE_RULES[number]
-    };
-  }
+  Rules.generateRules();
 
   window.normal2roman = function(normal) {
     return convert();
 
     function convert() {
       checkArgument();
-      return ascendingSimpleRules.reduce(reduceRule, '');
+      return Rules.ascendingSimpleRules.reduce(reduceRule, '');
     }
 
     function checkArgument() {
@@ -122,7 +119,7 @@
     return convert();
 
     function convert() {
-      return descendingRegExpRules.reduce(reduceRule, 0);
+      return Rules.descendingRegExpRules.reduce(reduceRule, 0);
     }
 
     function reduceRule(normal, rule) {
@@ -137,52 +134,6 @@
 
   function toInt(string) {
     return parseInt(string, 10);
-  }
-
-  function createRulesByBaseValues(baseValues) {
-    for (var i = 0, l = baseValues.length; i < l; ++i) {
-      var value = baseValues[i];
-      var nextValue = baseValues[i + 1];
-      var prevValue = baseValues[i - 1];
-      addSimpleRule(value);
-      if (i + 1 !== l) {
-        addComplexRule(value, nextValue, prevValue);
-      }
-    }
-  }
-
-  function addSimpleRule(value) {
-    allRules.push(createSimpleRule(value));
-  }
-
-  function addComplexRule(value, nextValue, prevValue) {
-    if (is10exponent(value)) {
-      allRules.push(createComplexRule(nextValue, value));
-    } else {
-      allRules.push(createComplexRule(nextValue, prevValue));
-    }
-  }
-
-  function createComplexRule(biggerNumber, substractedNumber) {
-    return {
-      'value': biggerNumber - substractedNumber,
-      'symbol': BASE_RULES[substractedNumber] + BASE_RULES[biggerNumber]
-    };
-  }
-
-  function createSimpleRule(number) {
-    return {
-      'value': number,
-      'symbol': BASE_RULES[number]
-    };
-  }
-
-  function sortByValueAscending(a, b) {
-    return b.value - a.value;
-  }
-
-  function sortByValueDescending(a, b) {
-    return a.value - b.value;
   }
 
   function cloneArray(array) {
