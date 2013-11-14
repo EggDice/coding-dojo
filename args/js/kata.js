@@ -1,29 +1,58 @@
-function parseArgs(args) {
+/** @constructor */
+function Args() {
+
+}
+
+Args.prototype.parse = function(args) {
+  checkArgs(args);
+
+  return _(args).
+  groupTrailing(checkIfNotArgName).
+  map(mapToParsedNameAndValuePairs).
+  object().
+  value();
+};
+
+function checkArgs(args) {
   if (!args) {
     throw Error('No arguments provided');
   }
-  var output = {};
-  forEachSkipping(args, function(arg, nextArg) {
-    var flagLetter = arg.charAt(1);
-    if (nextArg && !isArgName(nextArg)) {
-      if (isList(nextArg)) {
-        output[flagLetter] = toList(nextArg);
-      } else if (isInt(nextArg)) {
-        output[flagLetter] = toInt(nextArg);
-      } else {
-        output[flagLetter] = nextArg;
-      }
-      return true;
-    } else {
-      output[flagLetter] = true;
-      return false;
-    }
-  });
-  return output;
+}
+
+function checkIfNotArgName(arg) {
+  return !isArgName(arg);
+}
+
+function mapToParsedNameAndValuePairs(arg) {
+  var argName = arg2argName(arg[0]);
+  var value = getArgValue(arg[1]);
+  return [argName, value];
+}
+
+function getArgValue(rawValue) {
+  if (isList(rawValue)) {
+    return toList(rawValue);
+  } else if (isInt(rawValue)) {
+    return toInt(rawValue);
+  } else if (_.isString(rawValue)) {
+    return rawValue;
+  } else {
+    return true;
+  }
+}
+
+function arg2argName(arg) {
+  return arg.charAt(1);
+}
+
+function isArgName(string) {
+  return ((typeof string) === 'string') &&
+      string.charAt(0) === '-' &&
+      !isInt(string);
 }
 
 function isList(string) {
-  return string.indexOf(',') > -1;
+  return !!string && string.indexOf(',') > -1;
 }
 
 function toList(string) {
@@ -38,14 +67,15 @@ function isInt(string) {
   return !Number.isNaN(toInt(string));
 }
 
-function isArgName(string) {
-  return ((typeof string) === 'string') && string.charAt(0) === '-';
+function groupTrailing(array, iterator) {
+  return array.reduce(function(acc, element, index, arr) {
+    if (iterator(element, index, arr) && index) {
+      _.last(acc).push(element);
+    } else {
+      acc.push([element]);
+    }
+    return acc;
+  }, []);
 }
 
-function forEachSkipping(array, iterator) {
-  for (var i = 0, l = array.length; i < l; ++i) {
-    if (iterator(array[i], array[i + 1], array)) {
-      ++i;
-    }
-  }
-}
+_.mixin({'groupTrailing': groupTrailing});

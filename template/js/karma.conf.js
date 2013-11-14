@@ -4,6 +4,7 @@ basePath = '';
 files = [
   JASMINE,
   JASMINE_ADAPTER,
+  '../../lib/js/lodash.js',
   'kata.js',
   'test.js'
 ];
