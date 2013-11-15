@@ -42,7 +42,13 @@ function getArgValue(rawValue) {
 }
 
 function arg2argName(arg) {
-  return arg.charAt(1);
+  if (arg.charAt(0) === '-' && arg.charAt(1) === '-') {
+    return arg.substr(2);
+  }
+  if (arg.charAt(0) === '-') {
+    return arg.charAt(1);
+  }
+  return arg;
 }
 
 function isArgName(string) {

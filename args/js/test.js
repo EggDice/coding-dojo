@@ -58,9 +58,21 @@ describe('test', function() {
       });
     });
 
-    it('should return "command" with value: null', function() {
+    it('should return "command" with value: true', function() {
       expect(args.parse(['command'])).toEqual({
-        'command': null
+        'command': true
+      });
+    });
+
+    it('should return "command" with value: string', function() {
+      expect(args.parse(['command', 'string'])).toEqual({
+        'command': 'string'
+      });
+    });
+
+    it('should handle "--command"', function() {
+      expect(args.parse(['--command', 'string'])).toEqual({
+        'command': 'string'
       });
     });
   });
