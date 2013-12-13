@@ -11,30 +11,27 @@ var DISCOUNTS = {
 var BASE_PRICE = 8;
 
 function price(books) {
-  var combos = getCombos(books);
-  return combos.reduce(function(price, combo) {
+  return getCombos(books).reduce(function(price, combo) {
     return price + getComboPriceByLength(combo.length);
   }, 0);
 }
 
 function getCombos(books) {
-  var combos = [];
-  books.forEach(function(book) {
-    var combo = getBestAppendPriceCombo(book, combos);
-    if (!combo.length) {
-      combos.push(combo);
-    }
-    combo.push(book);
-  });
+  return books.reduce(pushCombos, []);
+}
+
+function pushCombos(combos, book) {
+  var combo = getBestAppendPriceCombo(book, combos);
+  if (!combo.length) {
+    combos.push(combo);
+  }
+  combo.push(book);
   return combos;
 }
 
 function getBestAppendPriceCombo(book, combos) {
-  return combos.filter(function(combo) {
-    return isBookInCombo(book, combo);
-  }).reduce(function(bestCombo, currentCombo) {
-    return getBetterAppendPriceCombo(bestCombo, currentCombo);
-  }, []);
+  return combos.filter(_.curry(isBookInCombo)(book)).
+    reduce(getBetterAppendPriceCombo, []);
 }
 
 function getComboPriceByLength(length) {

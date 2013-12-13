@@ -24,9 +24,12 @@ function checkIfNotArgName(arg) {
 }
 
 function mapToParsedNameAndValuePairs(arg) {
-  var argName = arg2argName(arg[0]);
-  var value = getArgValue(arg[1]);
-  return [argName, value];
+  var argName = arg[0];
+  var value = arg[1];
+  if (isList(argName) || isInt(argName)) {
+    return ['__mainArg__', getArgValue(argName)];
+  }
+  return [arg2argName(argName), getArgValue(value)];
 }
 
 function getArgValue(rawValue) {
@@ -42,10 +45,10 @@ function getArgValue(rawValue) {
 }
 
 function arg2argName(arg) {
-  if (arg.charAt(0) === '-' && arg.charAt(1) === '-') {
+  if (isLongArg(arg)) {
     return arg.substr(2);
   }
-  if (arg.charAt(0) === '-') {
+  if (isLetterArg(arg)) {
     return arg.charAt(1);
   }
   return arg;
@@ -53,8 +56,16 @@ function arg2argName(arg) {
 
 function isArgName(string) {
   return ((typeof string) === 'string') &&
-      string.charAt(0) === '-' &&
+      (isLetterArg(string) || isLongArg(string)) &&
       !isInt(string);
+}
+
+function isLetterArg(arg) {
+  return arg.charAt(0) === '-' && arg.charAt(1) !== '-' && arg.length == 2;
+}
+
+function isLongArg(arg) {
+  return arg.charAt(0) === '-' && arg.charAt(1) === '-' && arg.length > 2;
 }
 
 function isList(string) {

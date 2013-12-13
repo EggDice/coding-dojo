@@ -75,6 +75,12 @@ describe('test', function() {
         'command': 'string'
       });
     });
+
+    it('should return __mainArg__ with value: 0', function() {
+      expect(args.parse(['0'])).toEqual({
+        '__mainArg__': 0
+      });
+    });
   });
 
   describe('group trailing', function() {

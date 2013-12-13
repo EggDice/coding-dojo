@@ -148,4 +148,12 @@
   function log10(val) {
     return Math.log(val) / Math.LN10;
   }
+
+  function get(object, property) {
+    return object[property];
+  }
+
+  function subtract(a, b) {
+	return a - b;
+  }
 })(this);
